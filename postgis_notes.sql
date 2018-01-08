@@ -48,27 +48,30 @@ select tdg.tdgcopytable(
 
 
 
-[‎1/‎5/‎2018 12:42 PM]
-here's another fun one for you: can you think of a way to easily reproject all layers in a db?
+-- [‎1/‎5/‎2018 12:42 PM]
+-- here's another fun one for you: can you think of a way to easily reproject all layers in a db?
+--
+-- [‎1/‎5/‎2018 12:50 PM]  Spencer Gardner:
+-- you'd need to create a function to do it automatically
+--
+-- [‎1/‎5/‎2018 12:51 PM]  Spencer Gardner:
+-- but you can list all the tables in the db with
+--
+-- [‎1/‎5/‎2018 12:51 PM]  Spencer Gardner:
+-- SELECT table_schema,table_name
+-- FROM information_schema.tables
+-- ORDER BY table_schema,table_name;
+--
+-- [‎1/‎5/‎2018 12:51 PM]  Spencer Gardner:
+-- come to think of it, that might be a nice tdg function to have
+-- it can read through all tables and reproject them all
+--
+-- [‎1/‎5/‎2018 12:51 PM]  Spencer Gardner:
+-- if you're doing it table by table, you can do it like this:
+--
+-- [‎1/‎5/‎2018 12:52 PM]  Spencer Gardner:
+-- ALTER table_name ALTER COLUMN geom TYPE geometry([point/line/poly], 9999) USING ST_Transform(geom,9999)
+-- the USING tells it to run the reproject at the same time as changing the column type
 
-[‎1/‎5/‎2018 12:50 PM]  Spencer Gardner:
-you'd need to create a function to do it automatically
 
-[‎1/‎5/‎2018 12:51 PM]  Spencer Gardner:
-but you can list all the tables in the db with
-
-[‎1/‎5/‎2018 12:51 PM]  Spencer Gardner:
-SELECT table_schema,table_name
-FROM information_schema.tables
-ORDER BY table_schema,table_name;
-
-[‎1/‎5/‎2018 12:51 PM]  Spencer Gardner:
-come to think of it, that might be a nice tdg function to have
-it can read through all tables and reproject them all
-
-[‎1/‎5/‎2018 12:51 PM]  Spencer Gardner:
-if you're doing it table by table, you can do it like this:
-
-[‎1/‎5/‎2018 12:52 PM]  Spencer Gardner:
-ALTER table_name ALTER COLUMN geom TYPE geometry([point/line/poly], 9999) USING ST_Transform(geom,9999)
-the USING tells it to run the reproject at the same time as changing the column type
+alter table areas_of_interest alter column geom type geometry(multipolygon,2276) using ST_Transform(geom,2276);
