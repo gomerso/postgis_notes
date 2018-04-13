@@ -75,3 +75,31 @@ select tdg.tdgcopytable(
 
 
 alter table areas_of_interest alter column geom type geometry(multipolygon,2276) using ST_Transform(geom,2276);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--NOTE sub select that won't overwrite previous values
+
+UPDATE automated.intersections as i
+SET streets = (SELECT concat('Midblock - ',a.full_street_name)
+FROM automated.austin_network a
+WHERE i.f_status IN ('Done','Reviewed')
+ORDER BY ST_Distance(i.geom,a.geom)
+LIMIT 1
+)
+WHERE i.midblock = 1
+;
